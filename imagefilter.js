@@ -63,30 +63,39 @@ var ImageFilter =  (function(){
 		return image_data;
 	}
 
+	// Takes an ImageData object & a hash of colors & factors to multiply
+	// them by.
+	var vary_color = function(image_data, vary = {red: 1, green: 1, blue: 1}) {
+
+		_looper(image_data, function(values, i) {
+			image_data.data[i * 4 + 0 ] = values.r * vary.red;
+			image_data.data[i * 4 + 1 ] = values.g * vary.green;
+			image_data.data[i * 4 + 2 ] = values.b * vary.blue;
+		});
+
+		return image_data;
+	}
+
 	// Takes an ImageData object & removes the specified primary 
 	// color from it.
 	var kill_color = function(image_data, color) {
 
-		var color_to_kill;
+		var color_to_kill = {red: 1, green: 1, blue: 1};
 		if (color === 'red') {
-			color_to_kill = 0;
+			color_to_kill.red = 0;
 		}
 		else if (color === 'green') {
-			color_to_kill = 1;
+			color_to_kill.green = 0;
 		}
 		else if (color === 'blue') {
-			color_to_kill = 2;
+			color_to_kill.blue = 0;
 		}
 		else {
 			console.log('No valid pixel was specified.');
 			return image_data;
 		}
 
-		_looper(image_data, function(values, i) {
-			image_data.data[i * 4 + color_to_kill] = 0;
-		});
-
-		return image_data;
+		return vary_color(image_data, color_to_kill);
 	}
 
 
@@ -129,6 +138,7 @@ var ImageFilter =  (function(){
 		grayscale: grayscale,
 		invert: invert,
 		brighten: brighten,
+		vary_color: vary_color,
 		kill_color: kill_color
 	};
 
